@@ -99,6 +99,10 @@ jobs:
     name: Security Scan
     runs-on: ubuntu-latest
     
+    permissions:
+      contents: read
+      security-events: write
+    
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -118,7 +122,7 @@ jobs:
       with:
         sarif_file: results.sarif
       env:
-        GITHUB_TOKEN: ${{ secrets.SECURITY_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Run Nancy vulnerability scanner
       run: |

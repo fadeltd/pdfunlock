@@ -43,7 +43,7 @@ endif
 BUILD_DIR=bin/$(PLATFORM)_$(ARCH)
 BUILD_PATH=$(BUILD_DIR)/$(BINARY_NAME)
 
-.PHONY: all build clean test deps install uninstall build-all tag release help
+.PHONY: all build clean test test-unit test-integration test-coverage test-bench lint deps install uninstall build-all tag release help
 
 # Default target
 all: build
@@ -62,10 +62,50 @@ clean:
 	@rm -rf bin/
 	@echo "Clean complete"
 
-# Run tests
-test:
-	@echo "Running tests..."
-	$(GOTEST) -v ./...
+# Run all tests
+test: test-unit test-integration
+	@echo "All tests completed"
+
+# Run unit tests
+test-unit:
+	@echo "Running unit tests..."
+	$(GOTEST) -v -short ./...
+
+# Run integration tests
+test-integration:
+	@echo "Running integration tests..."
+	$(GOTEST) -v -tags=integration -run TestIntegration ./...
+
+# Run tests with coverage
+test-coverage:
+	@echo "Running tests with coverage..."
+	$(GOTEST) -v -coverprofile=coverage.out ./...
+	$(GOCMD) tool cover -html=coverage.out -o coverage.html
+	@echo "Coverage report generated: coverage.html"
+
+# Run benchmark tests
+test-bench:
+	@echo "Running benchmark tests..."
+	$(GOTEST) -v -bench=. -benchmem ./...
+
+# Run linter
+lint:
+	@echo "Running linter..."
+	@echo "Running go vet..."
+	$(GOCMD) vet ./...
+	@echo "Running go fmt check..."
+	@if [ "$$(gofmt -l .)" != "" ]; then \
+		echo "Code is not formatted. Run 'go fmt ./...' to fix:"; \
+		gofmt -l .; \
+		exit 1; \
+	fi
+	@echo "Running staticcheck..."
+	@if ! command -v staticcheck >/dev/null 2>&1; then \
+		echo "Installing staticcheck..."; \
+		go install honnef.co/go/tools/cmd/staticcheck@latest; \
+	fi
+	staticcheck ./...
+	@echo "Linting completed successfully"
 
 # Download dependencies
 deps:

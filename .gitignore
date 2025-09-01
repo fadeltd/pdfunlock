@@ -10,6 +10,13 @@
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+coverage.html
+
+# Output of test files
+testdata/report_protected_unlocked.pdf
+*_unlocked.pdf
+test_protected.pdf
+test_protected_unlocked.pdf
 
 # Dependency directories (remove the comment below to include it)
 # vendor/

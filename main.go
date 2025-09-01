@@ -170,7 +170,12 @@ func getPasswordForDirectory(dirPath string) string {
 }
 
 func getPassword() string {
-	// Prompt for password
+	// First check for environment variable
+	if envPassword := os.Getenv("PDF_PASSWORD"); envPassword != "" {
+		return envPassword
+	}
+
+	// Prompt for password if no environment variable is set
 	fmt.Print("Enter PDF password: ")
 	bytePassword, err := term.ReadPassword(int(os.Stdin.Fd()))
 	if err != nil {

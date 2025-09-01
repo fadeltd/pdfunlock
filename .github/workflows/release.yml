@@ -1,0 +1,56 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+env:
+  # Per-platform UPX compression settings
+  # Can be overridden in repository settings -> Secrets and variables -> Actions -> Variables
+  ENABLE_UPX_LINUX: ${{ vars.ENABLE_UPX_LINUX || 'false' }}
+  ENABLE_UPX_WINDOWS: ${{ vars.ENABLE_UPX_WINDOWS || 'false' }}
+  ENABLE_UPX_DARWIN_INTEL: ${{ vars.ENABLE_UPX_DARWIN_INTEL || 'false' }}
+  ENABLE_UPX_DARWIN_ARM: ${{ vars.ENABLE_UPX_DARWIN_ARM || 'false' }}
+
+jobs:
+  goreleaser:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.24'
+
+      - name: Install UPX
+        if: env.ENABLE_UPX_LINUX == 'true' || env.ENABLE_UPX_WINDOWS == 'true' || env.ENABLE_UPX_DARWIN_INTEL == 'true' || env.ENABLE_UPX_DARWIN_ARM == 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y upx-ucl
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v5
+        with:
+          distribution: goreleaser
+          version: latest
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ENABLE_UPX_LINUX: ${{ env.ENABLE_UPX_LINUX }}
+          ENABLE_UPX_WINDOWS: ${{ env.ENABLE_UPX_WINDOWS }}
+          ENABLE_UPX_DARWIN_INTEL: ${{ env.ENABLE_UPX_DARWIN_INTEL }}
+          ENABLE_UPX_DARWIN_ARM: ${{ env.ENABLE_UPX_DARWIN_ARM }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: release-artifacts
+          path: dist/

@@ -1,0 +1,119 @@
+# GoReleaser configuration for pdfunlock
+version: 1
+
+before:
+  hooks:
+    - go mod tidy
+    - go generate ./...
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    # Exclude unsupported combinations
+    ignore:
+      - goos: windows
+        goarch: arm64
+    binary: pdfunlock
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}}
+      - -X main.commit={{.Commit}}
+      - -X main.date={{.Date}}
+    main: ./
+
+# UPX compression (customizable per platform)
+upx:
+  # Global UPX compression - controlled by ENABLE_UPX environment variable
+  - enabled: '{{ if eq .Env.ENABLE_UPX "true" }}true{{ else }}false{{ end }}'
+    compress: best
+    lzma: true
+    brute: false
+
+archives:
+  - format: tar.gz
+    # Use zip for Windows
+    format_overrides:
+      - goos: windows
+        format: zip
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+    files:
+      - README.md
+      - LICENSE*
+
+checksum:
+  name_template: 'checksums.txt'
+
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  sort: asc
+  use: github
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+      - '^ci:'
+      - '^chore:'
+      - '^style:'
+      - '^refactor:'
+  groups:
+    - title: Features
+      regexp: '^.*?feat(\(.+\))??!?:.+$'
+      order: 0
+    - title: 'Bug fixes'
+      regexp: '^.*?fix(\(.+\))??!?:.+$'
+      order: 1
+    - title: Others
+      order: 999
+
+release:
+  github:
+    owner: '{{ .Env.GITHUB_REPOSITORY_OWNER }}'
+    name: '{{ .ProjectName }}'
+  name_template: 'Release {{ .Tag }}'
+  draft: false
+  prerelease: auto
+  mode: replace
+  header: |
+    ## Release {{ .Tag }}
+    
+    ### Downloads
+    
+    Choose the appropriate binary for your platform:
+    
+    - **Linux (x86_64)**: `pdfunlock_Linux_x86_64.tar.gz`
+    - **Linux (ARM64)**: `pdfunlock_Linux_arm64.tar.gz`
+    - **Windows (x86_64)**: `pdfunlock_Windows_x86_64.zip`
+    - **macOS (Intel)**: `pdfunlock_Darwin_x86_64.tar.gz`
+    - **macOS (Apple Silicon)**: `pdfunlock_Darwin_arm64.tar.gz`
+    
+    ### Installation
+    
+    1. Download the appropriate archive for your platform
+    2. Extract the binary
+    3. Make it executable (Linux/macOS): `chmod +x pdfunlock`
+    4. Optionally, move to your PATH: `sudo mv pdfunlock /usr/local/bin/`
+  footer: |
+    **Full Changelog**: https://github.com/{{ .Env.GITHUB_REPOSITORY_OWNER }}/{{ .ProjectName }}/compare/{{ .PreviousTag }}...{{ .Tag }}
+    
+    ---
+    
+    **UPX Compression Status**:
+    - Linux: {{ if eq .Env.ENABLE_UPX_LINUX "true" }}**enabled**{{ else }}**disabled**{{ end }}
+    - Windows: {{ if eq .Env.ENABLE_UPX_WINDOWS "true" }}**enabled**{{ else }}**disabled**{{ end }}
+    - macOS Intel: {{ if eq .Env.ENABLE_UPX_DARWIN_INTEL "true" }}**enabled**{{ else }}**disabled**{{ end }}
+    - macOS ARM: {{ if eq .Env.ENABLE_UPX_DARWIN_ARM "true" }}**enabled**{{ else }}**disabled** (recommended){{ end }}

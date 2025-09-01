@@ -3,7 +3,7 @@
 // Keywords: unlock pdf free, pdf unlocker, batch pdf unlock, open source
 module github.com/fadeltd/pdfunlock
 
-go 1.23.0
+go 1.24
 
 toolchain go1.24.6
 

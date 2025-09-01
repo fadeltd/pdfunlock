@@ -9,6 +9,8 @@ permissions:
   contents: write
 
 env:
+  # Global UPX compression setting
+  ENABLE_UPX: ${{ vars.ENABLE_UPX || 'true' }}
   # Per-platform UPX compression settings
   # Can be overridden in repository settings -> Secrets and variables -> Actions -> Variables
   ENABLE_UPX_LINUX: ${{ vars.ENABLE_UPX_LINUX || 'false' }}
@@ -31,7 +33,7 @@ jobs:
           go-version: '1.24'
 
       - name: Install UPX
-        if: env.ENABLE_UPX_LINUX == 'true' || env.ENABLE_UPX_WINDOWS == 'true' || env.ENABLE_UPX_DARWIN_INTEL == 'true' || env.ENABLE_UPX_DARWIN_ARM == 'true'
+        if: env.ENABLE_UPX == 'true' || env.ENABLE_UPX_LINUX == 'true' || env.ENABLE_UPX_WINDOWS == 'true' || env.ENABLE_UPX_DARWIN_INTEL == 'true' || env.ENABLE_UPX_DARWIN_ARM == 'true'
         run: |
           sudo apt-get update
           sudo apt-get install -y upx-ucl
@@ -42,13 +44,6 @@ jobs:
           distribution: goreleaser
           version: latest
           args: release --clean
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ENABLE_UPX: ${{ vars.ENABLE_UPX || 'true' }}
-          ENABLE_UPX_LINUX: ${{ env.ENABLE_UPX_LINUX || 'true' }}
-          ENABLE_UPX_WINDOWS: ${{ env.ENABLE_UPX_WINDOWS || 'true' }}
-          ENABLE_UPX_DARWIN_INTEL: ${{ env.ENABLE_UPX_DARWIN_INTEL || 'true' }}
-          ENABLE_UPX_DARWIN_ARM: ${{ env.ENABLE_UPX_DARWIN_ARM || 'false' }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4

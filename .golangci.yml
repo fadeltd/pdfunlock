@@ -29,7 +29,16 @@ linters-settings:
   goimports:
     local-prefixes: github.com/fadeltd/pdfunlock
   
-
+  depguard:
+    rules:
+      Main:
+        files:
+          - $all
+        allow:
+          - $gostd
+          - github.com/pdfcpu/pdfcpu/pkg/api
+          - github.com/pdfcpu/pdfcpu/pkg/pdfcpu/model
+          - golang.org/x/term
   
   goconst:
     min-len: 3
@@ -67,6 +76,8 @@ linters-settings:
       - octalLiteral
       - whyNoLint
       - wrapperFunc
+  
+
 
 linters:
   enable:
@@ -74,7 +85,7 @@ linters:
     - depguard
     - dogsled
     - errcheck
-    - exportloopref
+    - copyloopvar    # replaces exportloopref
     - exhaustive
     - funlen
     - gochecknoinits
@@ -84,7 +95,7 @@ linters:
     - gofmt
     - goimports
     - revive      # replaces golint
-    - gomnd
+    - mnd         # replaces gomnd
     - goprintffuncname
     - gosec
     - gosimple
@@ -110,17 +121,11 @@ linters:
     - gocognit
     - godot
     - godox
-    - goerr113
-    - interfacer
-    - maligned
+    - err113      # replaces goerr113
     - nestif
     - prealloc
     - testpackage
     - wsl
-    - golint      # deprecated
-    - varcheck    # deprecated
-    - structcheck # deprecated
-    - deadcode    # deprecated
 
 issues:
   exclude-rules:

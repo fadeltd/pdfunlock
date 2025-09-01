@@ -211,7 +211,8 @@ func BenchmarkFindPDFFiles(b *testing.B) {
 		os.WriteFile(txtPath, []byte("dummy txt"), 0644)
 	}
 
-	for b.Loop() {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
 		_, err := findPDFFiles(tempDir)
 		if err != nil {
 			b.Fatalf("findPDFFiles failed: %v", err)

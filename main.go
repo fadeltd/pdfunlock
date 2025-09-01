@@ -227,7 +227,8 @@ func processFileWithRetry(inPath, outPath, dirPath string, isOwnerPassword bool)
 
 		// If it's an authentication error and we have retries left
 		if isAuthError && attempt < maxRetries {
-			fmt.Printf("Authentication failed for %s. Please try again (attempt %d/%d)\n", filepath.Base(inPath), attempt, maxRetries)
+			fmt.Printf("Authentication failed for %s. Please try again (attempt %d/%d)\n",
+				filepath.Base(inPath), attempt, maxRetries)
 			// Clear the cached password for this directory
 			clearPasswordCache(dirPath)
 			continue
@@ -239,7 +240,7 @@ func processFileWithRetry(inPath, outPath, dirPath string, isOwnerPassword bool)
 	return false
 }
 
-func processFile(inPath, outPath, password string, isOwnerPassword bool) (bool, bool) {
+func processFile(inPath, outPath, password string, isOwnerPassword bool) (success bool, authError bool) {
 	var userPW, ownerPW string
 	if isOwnerPassword {
 		ownerPW = password
@@ -306,18 +307,27 @@ func isNotEncrypted(err error) bool {
 }
 
 func copyFile(src, dst string) error {
+	// #nosec G304 - File path is validated by caller
 	in, err := os.Open(src)
 	if err != nil {
 		return err
 	}
-	defer in.Close()
+	defer func() {
+		if closeErr := in.Close(); closeErr != nil {
+			// Log error but don't override main error
+			fmt.Printf("Warning: failed to close input file: %v\n", closeErr)
+		}
+	}()
 
+	// #nosec G304 - File path is validated by caller
 	out, err := os.Create(dst)
 	if err != nil {
 		return err
 	}
 	defer func() {
-		_ = out.Close()
+		if closeErr := out.Close(); closeErr != nil {
+			fmt.Printf("Warning: failed to close output file: %v\n", closeErr)
+		}
 	}()
 
 	if _, err := io.Copy(out, in); err != nil {

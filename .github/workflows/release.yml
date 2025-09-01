@@ -44,10 +44,11 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ENABLE_UPX_LINUX: ${{ env.ENABLE_UPX_LINUX }}
-          ENABLE_UPX_WINDOWS: ${{ env.ENABLE_UPX_WINDOWS }}
-          ENABLE_UPX_DARWIN_INTEL: ${{ env.ENABLE_UPX_DARWIN_INTEL }}
-          ENABLE_UPX_DARWIN_ARM: ${{ env.ENABLE_UPX_DARWIN_ARM }}
+          ENABLE_UPX: ${{ vars.ENABLE_UPX || 'true' }}
+          ENABLE_UPX_LINUX: ${{ env.ENABLE_UPX_LINUX || 'true' }}
+          ENABLE_UPX_WINDOWS: ${{ env.ENABLE_UPX_WINDOWS || 'true' }}
+          ENABLE_UPX_DARWIN_INTEL: ${{ env.ENABLE_UPX_DARWIN_INTEL || 'true' }}
+          ENABLE_UPX_DARWIN_ARM: ${{ env.ENABLE_UPX_DARWIN_ARM || 'false' }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4

@@ -124,7 +124,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Run Nancy vulnerability scanner
+    - name: Run govulncheck scanner
       run: |
-        go install github.com/sonatypecommunity/nancy@latest
-        go list -json -deps ./... | nancy sleuth
+        # Use govulncheck which is the official Go vulnerability scanner
+        go install golang.org/x/vuln/cmd/govulncheck@latest
+        govulncheck ./...

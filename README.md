@@ -214,6 +214,40 @@ UPX compression is automatically applied during cross-platform builds and can be
 
 - [pdfcpu](https://github.com/pdfcpu/pdfcpu) - PDF processing library
 
+## Contributing
+
+We welcome contributions to PDFUnlock! Here's how you can help:
+
+### How to Contribute
+
+1. **Report Issues**: Found a bug or have a feature request? [Open an issue](https://github.com/fadeltd/pdfunlock/issues) on GitHub
+2. **Submit Pull Requests**: 
+   - Fork the repository
+   - Create a feature branch (`git checkout -b feature/amazing-feature`)
+   - Make your changes
+   - Add tests if applicable
+   - Commit your changes (`git commit -m 'Add amazing feature'`)
+   - Push to the branch (`git push origin feature/amazing-feature`)
+   - Open a Pull Request
+3. **Wait for Review**: Maintainers will review your PR and provide feedback
+4. **Address Feedback**: Make any requested changes
+5. **Merge**: Once approved, your contribution will be merged!
+
+### Development Guidelines
+
+- Follow Go best practices and conventions
+- Add tests for new functionality
+- Update documentation as needed
+- Ensure all CI checks pass
+
+## Support the Project
+
+If you find PDFUnlock useful, consider supporting the development:
+
+[![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/fadeltd)
+
+Your support helps maintain and improve this free, open-source tool!
+
 ## License
 
 MIT License

@@ -111,12 +111,14 @@ jobs:
     - name: Run Gosec Security Scanner
       uses: securego/gosec@master
       with:
-        args: '-no-fail -fmt sarif -out results.sarif ./...'
+        args: '-fmt sarif -out results.sarif ./...'
 
     - name: Upload SARIF file
       uses: github/codeql-action/upload-sarif@v3
       with:
         sarif_file: results.sarif
+      env:
+        GITHUB_TOKEN: ${{ secrets.SECURITY_TOKEN }}
 
     - name: Run Nancy vulnerability scanner
       run: |

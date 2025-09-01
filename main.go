@@ -34,6 +34,11 @@ var (
 	date    = "unknown"
 )
 
+const (
+	minArgsForOutput = 2
+	usageExitCode    = 2
+)
+
 // Global password cache to store passwords by directory
 var passwordCache = make(map[string]string)
 
@@ -72,7 +77,7 @@ func main() {
 	} else if len(args) >= 1 {
 		// Positional argument processing
 		inputPath = args[0]
-		if len(args) >= 2 {
+		if len(args) >= minArgsForOutput {
 			outputPath = args[1]
 		}
 	} else {
@@ -83,7 +88,7 @@ func main() {
 		fmt.Println("  Auto naming: pdfunlock -in input.pdf [--owner] (creates input_unlocked.pdf)")
 		fmt.Println("  Directory:   pdfunlock -dir /path/to/pdfs [--owner]")
 		fmt.Println("  Version:     pdfunlock --version")
-		os.Exit(2)
+		os.Exit(usageExitCode)
 	}
 
 	// Auto-detect if input is a file or directory
@@ -240,7 +245,7 @@ func processFileWithRetry(inPath, outPath, dirPath string, isOwnerPassword bool)
 	return false
 }
 
-func processFile(inPath, outPath, password string, isOwnerPassword bool) (success bool, authError bool) {
+func processFile(inPath, outPath, password string, isOwnerPassword bool) (success, authError bool) {
 	var userPW, ownerPW string
 	if isOwnerPassword {
 		ownerPW = password

@@ -1,57 +1,93 @@
 name: Release
 
+# Merging to main does not publish directly. It derives the next version from
+# the [Unreleased] section of CHANGELOG.md, rewrites the changelog, commits it
+# back to main, pushes a tag and starts Publish, which builds the tag and ships
+# it.
+#
+# A merge with an empty [Unreleased] releases nothing, so merging and releasing
+# stay separate decisions.
 on:
   push:
-    tags:
-      - 'v*'
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 permissions:
   contents: write
-
-env:
-  # Per-platform UPX compression settings
-  # Can be overridden in repository settings -> Secrets and variables -> Actions -> Variables
-  ENABLE_UPX_LINUX: ${{ vars.ENABLE_UPX_LINUX || 'false' }}
-  ENABLE_UPX_WINDOWS: ${{ vars.ENABLE_UPX_WINDOWS || 'false' }}
-  ENABLE_UPX_DARWIN_INTEL: ${{ vars.ENABLE_UPX_DARWIN_INTEL || 'false' }}
-  ENABLE_UPX_DARWIN_ARM: ${{ vars.ENABLE_UPX_DARWIN_ARM || 'false' }}
+  actions: write
 
 jobs:
-  goreleaser:
+  release:
+    name: Cut a release from the changelog
     runs-on: ubuntu-latest
+    # Never react to our own release commit.
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4.2.0
+      - uses: actions/checkout@v7
         with:
+          # Check out the BRANCH TIP, not the commit that triggered the run.
+          # On a re-run the triggering sha is stale, and committing on top of it
+          # produces a non-fast-forward push that is rejected. Combined with the
+          # changelog logic being idempotent (an empty [Unreleased] releases
+          # nothing) this makes a re-run safe rather than broken.
+          ref: main
           fetch-depth: 0
+          token: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
 
-      - name: Set up Go
-        uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
-          go-version: '1.26'
+          go-version-file: .go-version
 
-      - name: Install UPX
-        if: env.ENABLE_UPX_LINUX == 'true' || env.ENABLE_UPX_WINDOWS == 'true' || env.ENABLE_UPX_DARWIN_INTEL == 'true' || env.ENABLE_UPX_DARWIN_ARM == 'true'
+      - id: cut
+        name: Derive the version from CHANGELOG.md
+        run: go run ./scripts/release
+
+      - name: Commit the changelog and tag
+        if: steps.cut.outputs.released == 'true'
+        env:
+          TAG: ${{ steps.cut.outputs.tag }}
         run: |
-          sudo apt-get update
-          sudo apt-get install -y upx-ucl
+          set -euo pipefail
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v7
-        with:
-          distribution: goreleaser
-          version: "~> v2"
-          args: release --clean
+          # Each push is guarded, so a partially-completed earlier attempt can
+          # be resumed rather than blocking every retry.
+          if git diff --quiet -- CHANGELOG.md; then
+            echo "::notice::Changelog already committed."
+          else
+            git add CHANGELOG.md
+            # [skip ci] so this push cannot re-enter this workflow when a PAT
+            # is in use: with a PAT, pushes DO trigger workflows.
+            git commit -m "Release ${TAG} [skip ci]"
+            git push origin HEAD:main
+          fi
+
+          if git ls-remote --exit-code --tags origin "refs/tags/${TAG}" >/dev/null 2>&1; then
+            echo "::notice::${TAG} already exists on the remote."
+          else
+            git tag -a "${TAG}" -m "Release ${TAG}"
+            git push origin "${TAG}"
+          fi
+
+      # Always dispatch, never rely on the tag event. Whether a tag pushed by
+      # automation triggers `on: push: tags` depends on which credential pushed
+      # it, and a publish that silently does not happen looks exactly like one
+      # that succeeded.
+      - name: Start Publish
+        if: steps.cut.outputs.released == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
-          ENABLE_UPX_LINUX: ${{ env.ENABLE_UPX_LINUX }}
-          ENABLE_UPX_WINDOWS: ${{ env.ENABLE_UPX_WINDOWS }}
-          ENABLE_UPX_DARWIN_INTEL: ${{ env.ENABLE_UPX_DARWIN_INTEL }}
-          ENABLE_UPX_DARWIN_ARM: ${{ env.ENABLE_UPX_DARWIN_ARM }}
+        run: gh workflow run publish.yml --ref main -f tag="${{ steps.cut.outputs.tag }}"
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: release-artifacts
-          path: dist/
+      - name: Summary
+        run: |
+          if [ "${{ steps.cut.outputs.released }}" = "true" ]; then
+            echo "Released ${{ steps.cut.outputs.tag }}; Publish started." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No [Unreleased] entries: nothing released." >> "$GITHUB_STEP_SUMMARY"
+          fi

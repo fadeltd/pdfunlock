@@ -2,6 +2,8 @@
 
 🔓 **Free Open Source PDF Unlocker** - A powerful CLI command-line tool to unlock password-protected PDF files instantly. Perfect for batch PDF unlock operations, this free PDF password remover supports both single file processing and bulk directory processing.
 
+🌐 **Website:** [fadeltd.github.io/pdfunlock](https://fadeltd.github.io/pdfunlock/)
+
 **Keywords:** unlock pdf free, pdf unlocker, open source pdf unlock, batch pdf unlock, free pdf password remover, decrypt pdf files, pdf security removal
 
 ## Features - Why Choose This Free PDF Unlocker?
@@ -37,6 +39,18 @@ Looking for a **free PDF unlocker** or **open source PDF password remover**? PDF
 Unlike web-based PDF unlock services, this tool runs entirely on your computer, ensuring your sensitive documents never leave your device. Perfect for businesses, students, and anyone who values privacy and security.
 
 ## Installation
+
+### Homebrew (macOS)
+
+```bash
+brew install --cask fadeltd/tap/pdfunlock
+```
+
+To update:
+
+```bash
+brew upgrade --cask pdfunlock
+```
 
 ### Download Pre-built Binaries
 
@@ -175,24 +189,27 @@ This project uses GitHub Actions with GoReleaser for automated cross-platform re
 
 **Release Process:**
 
-*Using Makefile (Recommended):*
-```bash
-# Create and push tag in one command
-make tag-release VERSION=v1.0.0
+You never pick a version number or write a release date. Releases are cut from [`CHANGELOG.md`](CHANGELOG.md):
 
-# Or step by step:
-make tag VERSION=v1.0.0
-make release VERSION=v1.0.0
-```
+1. In your pull request, add an entry under `## [Unreleased]` using a [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) heading. CI fails a PR that changes the tool without one. Changes to Markdown files, `docs/`, `.github/`, `scripts/`, `Makefile` and `env.sample` are exempt, and the `skip-changelog` label skips the check.
+   ```markdown
+   ## [Unreleased]
 
-*Manual process:*
-```bash
-# Create and push a git tag
-git tag v1.0.0 && git push origin v1.0.0
-```
+   ### Fixed
+   - The thing you fixed
+   ```
+2. Merge to `main`. The Release workflow picks the next version from the headings:
+   - `### Breaking` → major
+   - `### Added` → minor
+   - anything else → patch
+3. It moves the entries into a dated `## [x.y.z]` section, commits that as `Release vx.y.z`, and pushes the tag.
+4. It then starts Publish. GoReleaser builds the binaries, creates the GitHub release with those notes, and updates the Homebrew cask.
 
-2. GitHub Actions automatically builds and releases binaries
-3. Binaries are available on the [Releases page](https://github.com/fadeltd/pdfunlock/releases)
+A merge with an empty `[Unreleased]` releases nothing. Preview the next release locally with `go run ./scripts/release -dry-run`.
+
+To publish a hand-made tag instead (for example a prerelease such as `v1.2.0-rc.1`), run `make tag-release VERSION=v1.2.0-rc.1`, or run Publish from the Actions tab. Prereleases never reach the Homebrew tap.
+
+Binaries are available on the [Releases page](https://github.com/fadeltd/pdfunlock/releases).
 
 **UPX Compression:**
 UPX compression is automatically applied during cross-platform builds and can be configured via environment variables:

@@ -1,0 +1,102 @@
+name: Publish
+
+# Builds a TAG, never a branch: whatever shipped is always reachable by version.
+# Started by the Release workflow after it tags a merge to main. To publish a
+# hand-pushed tag, run it from the Actions tab with that tag (or use
+# `make release VERSION=vX.Y.Z`, which pushes the tag and starts this).
+#
+# GoReleaser builds the archives, creates the GitHub release with the notes of
+# that version from CHANGELOG.md, and pushes the Homebrew cask to
+# fadeltd/homebrew-tap (skipped for prereleases).
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to publish, e.g. v1.1.0'
+        required: true
+        type: string
+
+concurrency:
+  group: publish-${{ inputs.tag }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+env:
+  TAG: ${{ inputs.tag }}
+  # Per-platform UPX compression settings
+  # Can be overridden in repository settings -> Secrets and variables -> Actions -> Variables
+  ENABLE_UPX_LINUX: ${{ vars.ENABLE_UPX_LINUX || 'false' }}
+  ENABLE_UPX_WINDOWS: ${{ vars.ENABLE_UPX_WINDOWS || 'false' }}
+  ENABLE_UPX_DARWIN_INTEL: ${{ vars.ENABLE_UPX_DARWIN_INTEL || 'false' }}
+  ENABLE_UPX_DARWIN_ARM: ${{ vars.ENABLE_UPX_DARWIN_ARM || 'false' }}
+
+jobs:
+  goreleaser:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.tag }}
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v7
+        with:
+          go-version-file: .go-version
+
+      - name: Install UPX
+        if: env.ENABLE_UPX_LINUX == 'true' || env.ENABLE_UPX_WINDOWS == 'true' || env.ENABLE_UPX_DARWIN_INTEL == 'true' || env.ENABLE_UPX_DARWIN_ARM == 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y upx-ucl
+
+      # The notes come from the version's CHANGELOG.md section. A hand-pushed
+      # prerelease has no section, so GoReleaser generates notes from commits.
+      #
+      # The previous tag is set explicitly because older tags are not ancestors
+      # of main (history was rewritten after v1.0.1), so GoReleaser cannot find
+      # it with git describe. It is the newest stable tag below this one; a
+      # prerelease leaves it to GoReleaser, since sort -V ranks v1.0.0-rc1
+      # above v1.0.0.
+      - name: Prepare notes and previous tag
+        id: prep
+        run: |
+          set -euo pipefail
+          if go run ./scripts/release -notes "${TAG#v}" > "$RUNNER_TEMP/notes.md"; then
+            echo "args=--release-notes $RUNNER_TEMP/notes.md" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::No CHANGELOG.md section for ${TAG}; GoReleaser will generate the notes."
+          fi
+          previous=""
+          if [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            previous=$( { git tag -l 'v[0-9]*.[0-9]*.[0-9]*' | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' || true; echo "$TAG"; } \
+              | sort -uV | grep -B1 -x "$TAG" | grep -vx "$TAG" || true)
+          fi
+          echo "previous=${previous}" >> "$GITHUB_OUTPUT"
+          echo "Publishing ${TAG}, previous ${previous:-none}" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v7
+        with:
+          distribution: goreleaser
+          version: "~> v2"
+          args: release --clean ${{ steps.prep.outputs.args }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+          HOMEBREW_TAP_DEPLOY_KEY: ${{ secrets.HOMEBREW_TAP_DEPLOY_KEY }}
+          GORELEASER_CURRENT_TAG: ${{ inputs.tag }}
+          GORELEASER_PREVIOUS_TAG: ${{ steps.prep.outputs.previous }}
+          ENABLE_UPX_LINUX: ${{ env.ENABLE_UPX_LINUX }}
+          ENABLE_UPX_WINDOWS: ${{ env.ENABLE_UPX_WINDOWS }}
+          ENABLE_UPX_DARWIN_INTEL: ${{ env.ENABLE_UPX_DARWIN_INTEL }}
+          ENABLE_UPX_DARWIN_ARM: ${{ env.ENABLE_UPX_DARWIN_ARM }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-artifacts
+          path: dist/

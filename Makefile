@@ -113,16 +113,18 @@ tag:
 	@echo "Tag $(VERSION) created successfully"
 	@echo "To push the tag and trigger release, run: make release VERSION=$(VERSION)"
 
-# Push tag to trigger GitHub Actions release
+# Push a hand-made tag and start the Publish workflow for it. Normally not
+# needed: merging to main releases from the [Unreleased] changelog section.
 # Usage: make release VERSION=v1.0.0
 release:
 	@if [ -z "$(VERSION)" ]; then \
 		echo "Error: VERSION is required. Usage: make release VERSION=v1.0.0"; \
 		exit 1; \
 	fi
-	@echo "Pushing tag $(VERSION) to trigger release..."
+	@echo "Pushing tag $(VERSION) and starting Publish..."
 	@git push origin $(VERSION)
-	@echo "Release triggered! Check GitHub Actions for build status."
+	@gh workflow run publish.yml --ref main -f tag=$(VERSION)
+	@echo "Publish started! Check GitHub Actions for build status."
 	@echo "Release will be available at: https://github.com/fadeltd/pdfunlock/releases/tag/$(VERSION)"
 
 # Create and push tag in one command
@@ -140,7 +142,7 @@ help:
 	@echo "  uninstall    - Remove binary from system"
 	@echo "  build-all    - Build for multiple platforms"
 	@echo "  tag          - Create a new tag (requires VERSION=vX.Y.Z)"
-	@echo "  release      - Push tag to trigger release (requires VERSION=vX.Y.Z)"
+	@echo "  release      - Push tag and start Publish (requires VERSION=vX.Y.Z)"
 	@echo "  tag-release  - Create and push tag in one command (requires VERSION=vX.Y.Z)"
 	@echo "  help         - Show this help message"
 	@echo ""

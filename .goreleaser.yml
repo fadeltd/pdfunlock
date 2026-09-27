@@ -130,7 +130,7 @@ release:
     
     - **Linux (x86_64)**: `pdfunlock_Linux_x86_64.tar.gz`
     - **Linux (ARM64)**: `pdfunlock_Linux_arm64.tar.gz`
-    - **Windows (x86_64)**: `pdfunlock_Windows_x86_64.zip`
+    - **Windows (x86_64)**: `pdfunlock_Windows_x86_64.tar.gz`
     - **macOS (Intel)**: `pdfunlock_Darwin_x86_64.tar.gz`
     - **macOS (Apple Silicon)**: `pdfunlock_Darwin_arm64.tar.gz`
     

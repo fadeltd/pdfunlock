@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [1.1.0] - 2026-09-27
+
 ### Added
 - Install on macOS with Homebrew: `brew install --cask fadeltd/tap/pdfunlock`
 - Project website at https://fadeltd.github.io/pdfunlock/

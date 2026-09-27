@@ -45,6 +45,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+          HOMEBREW_TAP_DEPLOY_KEY: ${{ secrets.HOMEBREW_TAP_DEPLOY_KEY }}
           ENABLE_UPX_LINUX: ${{ env.ENABLE_UPX_LINUX }}
           ENABLE_UPX_WINDOWS: ${{ env.ENABLE_UPX_WINDOWS }}
           ENABLE_UPX_DARWIN_INTEL: ${{ env.ENABLE_UPX_DARWIN_INTEL }}

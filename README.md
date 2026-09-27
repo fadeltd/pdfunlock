@@ -2,6 +2,8 @@
 
 🔓 **Free Open Source PDF Unlocker** - A powerful CLI command-line tool to unlock password-protected PDF files instantly. Perfect for batch PDF unlock operations, this free PDF password remover supports both single file processing and bulk directory processing.
 
+🌐 **Website:** [fadeltd.github.io/pdfunlock](https://fadeltd.github.io/pdfunlock/)
+
 **Keywords:** unlock pdf free, pdf unlocker, open source pdf unlock, batch pdf unlock, free pdf password remover, decrypt pdf files, pdf security removal
 
 ## Features - Why Choose This Free PDF Unlocker?
@@ -37,6 +39,18 @@ Looking for a **free PDF unlocker** or **open source PDF password remover**? PDF
 Unlike web-based PDF unlock services, this tool runs entirely on your computer, ensuring your sensitive documents never leave your device. Perfect for businesses, students, and anyone who values privacy and security.
 
 ## Installation
+
+### Homebrew (macOS)
+
+```bash
+brew install --cask fadeltd/tap/pdfunlock
+```
+
+To update:
+
+```bash
+brew upgrade --cask pdfunlock
+```
 
 ### Download Pre-built Binaries
 

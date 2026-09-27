@@ -55,6 +55,42 @@ archives:
 checksum:
   name_template: 'checksums.txt'
 
+# Homebrew cask in fadeltd/homebrew-tap: brew install --cask fadeltd/tap/pdfunlock
+# Pushed over SSH with a deploy key (HOMEBREW_TAP_DEPLOY_KEY secret)
+homebrew_casks:
+  - name: pdfunlock
+    directory: Casks
+    binaries:
+      - pdfunlock
+    description: "Unlock password-protected PDF files from the command-line"
+    homepage: "https://fadeltd.github.io/pdfunlock/"
+    commit_author:
+      name: github-actions[bot]
+      email: 41898282+github-actions[bot]@users.noreply.github.com
+    commit_msg_template: "pdfunlock {{ .Tag }}"
+    # Prereleases (e.g. v1.0.0-alpha.1) never reach the tap
+    skip_upload: auto
+    repository:
+      owner: fadeltd
+      name: homebrew-tap
+      branch: main
+      git:
+        url: git@github.com:fadeltd/homebrew-tap.git
+        private_key: "{{ .Env.HOMEBREW_TAP_DEPLOY_KEY }}"
+    # The binary is unsigned and not notarized, so drop the quarantine
+    # attribute to let it run straight after install. Homebrew 7 deprecates
+    # the `postflight` block that `hooks.post.install` generates, so write
+    # `postflight_steps` directly. GoReleaser puts custom_block at the top of
+    # the cask, so `brew style` reports Cask/StanzaOrder; that is cosmetic.
+    custom_block: |
+      postflight_steps do
+        on_macos do
+          run "/usr/bin/xattr",
+              args:           ["-dr", "com.apple.quarantine", "{{ "{{" }}staged_path{{ "}}" }}/pdfunlock"],
+              writable_paths: ["pdfunlock"]
+        end
+      end
+
 # snapshot configuration (uses defaults)
 
 changelog:

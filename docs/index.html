@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PDFUnlock — Free PDF Password Remover for the Command Line</title>
+<meta name="description" content="Free, open-source command-line tool that removes the password from PDF files you can open. Unlock one PDF or a whole folder at once, offline, on macOS, Linux and Windows.">
+<meta name="keywords" content="unlock pdf, pdf password remover, remove pdf password, decrypt pdf, batch pdf unlock, pdf unlocker cli, open source pdf unlock">
+<link rel="canonical" href="https://fadeltd.github.io/pdfunlock/">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta property="og:type" content="website">
+<meta property="og:title" content="PDFUnlock — Free PDF Password Remover for the Command Line">
+<meta property="og:description" content="Remove the password from PDFs you can open, one file or a whole folder at once. Runs offline on macOS, Linux and Windows.">
+<meta property="og:url" content="https://fadeltd.github.io/pdfunlock/">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "PDFUnlock",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "macOS, Linux, Windows",
+  "description": "Command-line tool that removes the password from PDF files you can open, one file or a whole folder at once, offline.",
+  "url": "https://fadeltd.github.io/pdfunlock/",
+  "downloadUrl": "https://github.com/fadeltd/pdfunlock/releases",
+  "license": "https://opensource.org/licenses/MIT",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "Can PDFUnlock open a PDF if I don't know the password?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No. PDFUnlock does not guess or crack passwords. You enter the password once, and it saves a copy of the PDF with the password removed." } },
+    { "@type": "Question", "name": "Are my PDFs uploaded anywhere?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No. PDFUnlock runs entirely on your computer and never sends files or passwords over the network." } },
+    { "@type": "Question", "name": "Is PDFUnlock free?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. It is open source under the MIT license." } },
+    { "@type": "Question", "name": "Which platforms does it run on?",
+      "acceptedAnswer": { "@type": "Answer", "text": "macOS (Apple Silicon and Intel), Linux (x86_64 and ARM64) and Windows (x86_64)." } }
+  ]
+}
+</script>
+<style>
+:root {
+  --bg: #ffffff; --surface: #f6f7f9; --text: #15181d; --muted: #5a6270; --border: #e3e6eb;
+  --accent: #c5221f; --accent-text: #ffffff; --code-bg: #eef0f3;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f141b; --surface: #182029; --text: #e8ebef; --muted: #9aa4b2; --border: #2a3440;
+    --accent: #ff7b72; --accent-text: #15181d; --code-bg: #1f2833;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f141b; --surface: #182029; --text: #e8ebef; --muted: #9aa4b2; --border: #2a3440;
+  --accent: #ff7b72; --accent-text: #15181d; --code-bg: #1f2833;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+.wrap { max-width: 880px; margin: 0 auto; padding: 0 16px; }
+header { padding: 64px 0 40px; text-align: center; }
+header img { width: 96px; height: 96px; }
+h1 { font-size: clamp(1.8rem, 5vw, 2.6rem); line-height: 1.2; margin: 16px 0 12px; }
+.lead { color: var(--muted); font-size: 1.15rem; max-width: 640px; margin: 0 auto 28px; }
+.buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.btn {
+  display: inline-block; padding: 12px 22px; border-radius: 10px; font-weight: 600; text-decoration: none;
+  border: 1px solid var(--border); color: var(--text);
+}
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+section { padding: 32px 0; border-top: 1px solid var(--border); }
+h2 { font-size: 1.5rem; margin: 0 0 16px; }
+h3 { font-size: 1.05rem; margin: 20px 0 8px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 16px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+.card h3 { margin: 0 0 6px; }
+.card p { margin: 0; color: var(--muted); }
+ol li, ul li { margin: 6px 0; }
+code { background: var(--code-bg); padding: 2px 6px; border-radius: 5px; font-size: 0.9em; word-break: break-word; }
+pre {
+  background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px;
+  padding: 14px 16px; margin: 0 0 12px; overflow-x: auto; font-size: 0.9rem; line-height: 1.5;
+}
+pre code { background: none; padding: 0; font-size: inherit; word-break: normal; }
+.comment { color: var(--muted); }
+details { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; margin: 10px 0; }
+summary { font-weight: 600; cursor: pointer; }
+details p { color: var(--muted); margin: 10px 0 0; }
+a { color: var(--accent); }
+footer { padding: 32px 0 48px; color: var(--muted); font-size: 0.9rem; border-top: 1px solid var(--border); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img src="favicon.svg" alt="" width="96" height="96">
+    <h1>PDFUnlock</h1>
+    <p class="lead">Remove the password from PDFs you can already open, so you never have to type it again. Unlock one file or a whole folder at once, offline, on macOS, Linux and Windows.</p>
+    <div class="buttons">
+      <a class="btn primary" href="#install">Install</a>
+      <a class="btn" href="https://github.com/fadeltd/pdfunlock">View on GitHub</a>
+    </div>
+  </header>
+
+  <section>
+    <h2>Why PDFUnlock?</h2>
+    <div class="grid">
+      <div class="card"><h3>Stays on your computer</h3><p>No upload, no web service. Bank statements, payslips and contracts never leave your device.</p></div>
+      <div class="card"><h3>Whole folders at once</h3><p>Point it at a directory and every PDF inside is unlocked. You type the password once per folder.</p></div>
+      <div class="card"><h3>Keeps your originals</h3><p>Unlocked copies are saved next to the originals with an <code>_unlocked</code> suffix. PDFs without a password are copied unchanged.</p></div>
+      <div class="card"><h3>Retries on a wrong password</h3><p>Mistyped it? PDFUnlock asks again, up to three times, before giving up on a file.</p></div>
+    </div>
+  </section>
+
+  <section id="install">
+    <h2>Install</h2>
+    <h3>Homebrew (macOS)</h3>
+    <pre><code>brew install --cask fadeltd/tap/pdfunlock</code></pre>
+    <p>Update later with <code>brew upgrade --cask pdfunlock</code>.</p>
+
+    <h3>Pre-built binaries</h3>
+    <p>Download the archive for your platform from the <a href="https://github.com/fadeltd/pdfunlock/releases/latest">latest release</a>, extract it, and put <code>pdfunlock</code> somewhere on your <code>PATH</code>. Builds are available for macOS (Apple Silicon, Intel), Linux (x86_64, ARM64) and Windows (x86_64).</p>
+
+    <h3>Build from source</h3>
+    <pre><code>git clone https://github.com/fadeltd/pdfunlock.git
+cd pdfunlock
+make build</code></pre>
+  </section>
+
+  <section>
+    <h2>Usage</h2>
+    <p>PDFUnlock prompts for the password without echoing it to the screen.</p>
+    <h3>One file</h3>
+    <pre><code><span class="comment"># Creates statement_unlocked.pdf</span>
+pdfunlock statement.pdf
+
+<span class="comment"># Choose the output file</span>
+pdfunlock statement.pdf statement-open.pdf
+pdfunlock -in statement.pdf -out statement-open.pdf
+
+<span class="comment"># The password you have is the owner (permissions) password</span>
+pdfunlock statement.pdf --owner</code></pre>
+    <h3>A whole folder</h3>
+    <pre><code><span class="comment"># Unlock every PDF in the folder</span>
+pdfunlock ~/Documents/statements
+pdfunlock -dir ~/Documents/statements</code></pre>
+  </section>
+
+  <section>
+    <h2>FAQ</h2>
+    <details><summary>Can it open a PDF if I don't know the password?</summary><p>No. PDFUnlock doesn't guess or crack passwords. You enter the password once, and it saves a copy of the PDF with the password removed.</p></details>
+    <details><summary>Are my PDFs uploaded anywhere?</summary><p>No. PDFUnlock runs entirely on your computer and never sends files or passwords over the network.</p></details>
+    <details><summary>What does <code>--owner</code> do?</summary><p>PDFs can have a user password (needed to open the file) and an owner password (which controls printing, copying and editing). By default PDFUnlock treats what you type as the user password; pass <code>--owner</code> if you have the owner password instead.</p></details>
+    <details><summary>Is it free?</summary><p>Yes. PDFUnlock is open source under the MIT license.</p></details>
+    <details><summary>Which platforms does it run on?</summary><p>macOS (Apple Silicon and Intel), Linux (x86_64 and ARM64) and Windows (x86_64).</p></details>
+  </section>
+
+  <footer>
+    Open source under the MIT license. <a href="https://github.com/fadeltd/pdfunlock">Source on GitHub</a>.
+  </footer>
+</div>
+</body>
+</html>

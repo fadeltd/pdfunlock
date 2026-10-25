@@ -7,7 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-Nothing yet.
+### Fixed
+- Correct password rejected with "please provide the correct password" for AES-128/RC4-128 PDFs whose encryption dictionary leaves out the optional key length (#3)
+
+### Changed
+- Pin Go 1.27.2 for local builds (was 1.26.8)
+- Update pdfcpu to v0.16.3, built from the `fadeltd/pdfcpu` fork until the key length fix lands upstream
 
 ## [1.1.0] - 2026-09-27
 

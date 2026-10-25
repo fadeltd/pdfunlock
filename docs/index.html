@@ -23,7 +23,7 @@
   "description": "Command-line tool that removes the password from PDF files you can open, one file or a whole folder at once, offline.",
   "url": "https://fadeltd.github.io/pdfunlock/",
   "downloadUrl": "https://github.com/fadeltd/pdfunlock/releases",
-  "license": "https://opensource.org/licenses/MIT",
+  "license": "https://www.gnu.org/licenses/gpl-3.0.html",
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
 }
 </script>
@@ -37,7 +37,7 @@
     { "@type": "Question", "name": "Are my PDFs uploaded anywhere?",
       "acceptedAnswer": { "@type": "Answer", "text": "No. PDFUnlock runs entirely on your computer and never sends files or passwords over the network." } },
     { "@type": "Question", "name": "Is PDFUnlock free?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Yes. It is open source under the MIT license." } },
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. It is open source under the GPL-3.0 license." } },
     { "@type": "Question", "name": "Which platforms does it run on?",
       "acceptedAnswer": { "@type": "Answer", "text": "macOS (Apple Silicon and Intel), Linux (x86_64 and ARM64) and Windows (x86_64)." } }
   ]
@@ -157,12 +157,12 @@ pdfunlock -dir ~/Documents/statements</code></pre>
     <details><summary>Can it open a PDF if I don't know the password?</summary><p>No. PDFUnlock doesn't guess or crack passwords. You enter the password once, and it saves a copy of the PDF with the password removed.</p></details>
     <details><summary>Are my PDFs uploaded anywhere?</summary><p>No. PDFUnlock runs entirely on your computer and never sends files or passwords over the network.</p></details>
     <details><summary>What does <code>--owner</code> do?</summary><p>PDFs can have a user password (needed to open the file) and an owner password (which controls printing, copying and editing). By default PDFUnlock treats what you type as the user password; pass <code>--owner</code> if you have the owner password instead.</p></details>
-    <details><summary>Is it free?</summary><p>Yes. PDFUnlock is open source under the MIT license.</p></details>
+    <details><summary>Is it free?</summary><p>Yes. PDFUnlock is open source under the GPL-3.0 license.</p></details>
     <details><summary>Which platforms does it run on?</summary><p>macOS (Apple Silicon and Intel), Linux (x86_64 and ARM64) and Windows (x86_64).</p></details>
   </section>
 
   <footer>
-    Open source under the MIT license. <a href="https://github.com/fadeltd/pdfunlock">Source on GitHub</a>.
+    Open source under the GPL-3.0 license. <a href="https://github.com/fadeltd/pdfunlock">Source on GitHub</a>.
   </footer>
 </div>
 </body>

@@ -233,7 +233,7 @@ UPX compression is automatically applied during cross-platform builds and can be
 
 ## License
 
-MIT License
+[GPL-3.0](LICENSE). Releases v1.1.0 and earlier were published under the MIT License.
 
 ---
 
@@ -247,4 +247,4 @@ MIT License
 
 **Alternatives to:** online pdf unlocker, web pdf unlock, paid pdf tools, Adobe Acrobat password removal, SmallPDF unlock, iLovePDF unlock, PDF24 unlock
 
-**Technical:** golang pdf tool, cross-platform pdf utility, CLI pdf processor, open source document tools, github pdf unlocker, MIT license pdf tool
+**Technical:** golang pdf tool, cross-platform pdf utility, CLI pdf processor, open source document tools, github pdf unlocker, GPL-3.0 pdf tool

@@ -15,6 +15,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"io"
@@ -246,7 +247,7 @@ func processFile(inPath, outPath, password string, isOwnerPassword bool) (bool, 
 	conf := model.NewAESConfiguration(userPW, ownerPW, 0)
 
 	// Try to decrypt.
-	if err := api.DecryptFile(inPath, outPath, conf); err != nil {
+	if err := api.DecryptFile(context.Background(), inPath, outPath, conf); err != nil {
 		// If the file is not encrypted, just copy it through.
 		if isNotEncrypted(err) {
 			if err = copyFile(inPath, outPath); err != nil {

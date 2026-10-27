@@ -1,0 +1,33 @@
+name: Feature request
+description: Suggest a new option, platform, or install method
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What do you want to do?
+      description: The task or problem, not the solution yet.
+      placeholder: I get a password-protected statement every month and want to unlock them all with one command.
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: How you'd like pdfunlock to handle it, e.g. a new flag and how you'd call it.
+      placeholder: pdfunlock -dir ~/Statements -password-file ~/.statement-pw
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Workarounds or alternatives
+      description: What you do today, or other tools that already do this.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I searched the existing issues for this request.
+          required: true

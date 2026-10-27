@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-Nothing yet.
+### Added
+- Install on Windows with winget: `winget install fadeltd.pdfunlock` (#6)
+
+### Changed
+- The Windows release archive is now `pdfunlock_Windows_x86_64.zip` (was `.tar.gz`)
 
 ## [1.1.1] - 2026-10-25
 

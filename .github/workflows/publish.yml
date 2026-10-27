@@ -6,8 +6,9 @@ name: Publish
 # `make release VERSION=vX.Y.Z`, which pushes the tag and starts this).
 #
 # GoReleaser builds the archives, creates the GitHub release with the notes of
-# that version from CHANGELOG.md, and pushes the Homebrew cask to
-# fadeltd/homebrew-tap (skipped for prereleases).
+# that version from CHANGELOG.md, pushes the Homebrew cask to
+# fadeltd/homebrew-tap and opens a winget PR from fadeltd/winget-pkgs to
+# microsoft/winget-pkgs (both skipped for prereleases).
 on:
   workflow_dispatch:
     inputs:
@@ -88,6 +89,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
           HOMEBREW_TAP_DEPLOY_KEY: ${{ secrets.HOMEBREW_TAP_DEPLOY_KEY }}
+          WINGET_GITHUB_TOKEN: ${{ secrets.WINGET_GITHUB_TOKEN }}
           GORELEASER_CURRENT_TAG: ${{ inputs.tag }}
           GORELEASER_PREVIOUS_TAG: ${{ steps.prep.outputs.previous }}
           ENABLE_UPX_LINUX: ${{ env.ENABLE_UPX_LINUX }}

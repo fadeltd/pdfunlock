@@ -52,6 +52,18 @@ To update:
 brew upgrade --cask pdfunlock
 ```
 
+### winget (Windows)
+
+```powershell
+winget install fadeltd.pdfunlock
+```
+
+To update:
+
+```powershell
+winget upgrade fadeltd.pdfunlock
+```
+
 ### Download Pre-built Binaries
 
 Download the latest release for your platform from the [Releases page](https://github.com/fadeltd/pdfunlock/releases).

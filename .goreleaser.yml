@@ -51,6 +51,10 @@ archives:
       - LICENSE*
     # Don't wrap in directory to keep binaries at top level
     wrap_in_directory: false
+    # winget installs portable apps from zip archives, not tar.gz
+    format_overrides:
+      - goos: windows
+        formats: [zip]
 
 checksum:
   name_template: 'checksums.txt'
@@ -91,6 +95,48 @@ homebrew_casks:
         end
       end
 
+# winget manifests for microsoft/winget-pkgs: winget install fadeltd.pdfunlock
+# Pushed to the fadeltd/winget-pkgs fork, which then opens a PR upstream. Needs
+# a classic PAT with public_repo scope (WINGET_GITHUB_TOKEN secret), since the
+# workflow's GITHUB_TOKEN cannot reach other repositories.
+winget:
+  - name: pdfunlock
+    publisher: fadeltd
+    package_identifier: fadeltd.pdfunlock
+    short_description: "Unlock password-protected PDF files from the command-line"
+    description: |
+      PDFUnlock removes the password from protected PDF files. It runs
+      entirely on your computer, so your documents never leave your device.
+    license: GPL-3.0
+    license_url: "https://github.com/fadeltd/pdfunlock/blob/main/LICENSE"
+    homepage: "https://fadeltd.github.io/pdfunlock/"
+    publisher_url: "https://github.com/fadeltd"
+    publisher_support_url: "https://github.com/fadeltd/pdfunlock/issues"
+    release_notes_url: "https://github.com/fadeltd/pdfunlock/releases/tag/{{ .Tag }}"
+    tags:
+      - pdf
+      - password
+      - unlock
+      - decrypt
+      - cli
+    commit_author:
+      name: github-actions[bot]
+      email: 41898282+github-actions[bot]@users.noreply.github.com
+    commit_msg_template: "New version: {{ .PackageIdentifier }} {{ .Version }}"
+    # Prereleases (e.g. v1.0.0-alpha.1) are never submitted
+    skip_upload: auto
+    repository:
+      owner: fadeltd
+      name: winget-pkgs
+      branch: "pdfunlock-{{ .Version }}"
+      token: "{{ .Env.WINGET_GITHUB_TOKEN }}"
+      pull_request:
+        enabled: true
+        base:
+          owner: microsoft
+          name: winget-pkgs
+          branch: master
+
 # snapshot configuration (uses defaults)
 
 changelog:
@@ -130,7 +176,7 @@ release:
     
     - **Linux (x86_64)**: `pdfunlock_Linux_x86_64.tar.gz`
     - **Linux (ARM64)**: `pdfunlock_Linux_arm64.tar.gz`
-    - **Windows (x86_64)**: `pdfunlock_Windows_x86_64.tar.gz`
+    - **Windows (x86_64)**: `pdfunlock_Windows_x86_64.zip`
     - **macOS (Intel)**: `pdfunlock_Darwin_x86_64.tar.gz`
     - **macOS (Apple Silicon)**: `pdfunlock_Darwin_arm64.tar.gz`
     
@@ -140,6 +186,8 @@ release:
     2. Extract the binary
     3. Make it executable (Linux/macOS): `chmod +x pdfunlock`
     4. Optionally, move to your PATH: `sudo mv pdfunlock /usr/local/bin/`
+
+    Or use a package manager: `brew install --cask fadeltd/tap/pdfunlock` (macOS) or `winget install fadeltd.pdfunlock` (Windows).
   footer: |
     **Full Changelog**: https://github.com/{{ .Env.GITHUB_REPOSITORY_OWNER }}/{{ .ProjectName }}/compare/{{ .PreviousTag }}...{{ .Tag }}
     

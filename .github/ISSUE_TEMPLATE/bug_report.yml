@@ -1,0 +1,101 @@
+name: Bug report
+description: A PDF won't unlock, or pdfunlock crashes or misbehaves
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! **Never post a real password or attach a PDF with personal data** (bank statements, payslips, IDs). This issue is public.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you expect, and what happened instead?
+      placeholder: The correct password is rejected with "please provide the correct password".
+    validations:
+      required: true
+
+  - type: textarea
+    id: command
+    attributes:
+      label: Command
+      description: The exact command you ran. Replace file names with placeholders if they are sensitive.
+      placeholder: pdfunlock -in statement.pdf
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: output
+    attributes:
+      label: Output
+      description: Everything pdfunlock printed, including errors.
+      render: text
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Output of `pdfunlock --version`
+      placeholder: pdfunlock 1.2.0
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - macOS (Apple Silicon)
+        - macOS (Intel)
+        - Windows (x86_64)
+        - Linux (x86_64)
+        - Linux (ARM64)
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: install
+    attributes:
+      label: How did you install pdfunlock?
+      options:
+        - Homebrew
+        - winget
+        - Downloaded from Releases
+        - Built from source
+    validations:
+      required: true
+
+  - type: textarea
+    id: pdf
+    attributes:
+      label: About the PDF
+      description: |
+        Only for PDFs that won't unlock. Any of these help:
+        - Which app or organisation produced it (e.g. a bank's e-statement)
+        - The encryption shown in your PDF viewer (Acrobat: Document Properties > Security; macOS Preview: Tools > Show Inspector)
+        - Whether it opens with the same password in another app (Acrobat, Preview, a browser)
+        - Whether you used `-owner`
+      placeholder: |
+        Produced by: ...
+        Encryption: AES 128-bit
+        Opens in Preview with the same password: yes
+
+  - type: textarea
+    id: sample
+    attributes:
+      label: Sample file
+      description: |
+        A PDF that shows the problem makes a fix much faster. If you can, re-create it with a dummy password and no personal content, attach it here, and write the dummy password below.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I searched the existing issues for this problem.
+          required: true
+        - label: This report contains no real passwords or personal data.
+          required: true

@@ -253,7 +253,7 @@ UPX compression is automatically applied during cross-platform builds and can be
 
 **Primary Keywords:** unlock pdf free, pdf unlocker, open source pdf unlock, batch pdf unlock, free pdf password remover, decrypt pdf files, pdf security removal
 
-**Secondary Keywords:** pdf unlock tool, free pdf decryption, remove pdf password, unlock password protected pdf, pdf password cracker, bulk pdf unlock, command line pdf unlocker, offline pdf unlock, secure pdf unlock, desktop pdf unlocker
+**Secondary Keywords:** pdf unlock tool, free pdf decryption, remove pdf password, unlock password protected pdf, bulk pdf unlock, command line pdf unlocker, offline pdf unlock, secure pdf unlock, desktop pdf unlocker
 
 **Use Cases:** academic pdf unlock, business document decryption, bulk pdf processing, password recovery, document management, file conversion preparation, archive processing
 
